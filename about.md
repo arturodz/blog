@@ -1,5 +1,5 @@
 ---
-title: About
+title: Sobre Mí
 permalink: about/
 profile: true
 ---
