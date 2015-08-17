@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>Arturo Diaz</title>
+    <description>Start Again.</description>
+    <link>http://arturodz.com</link>
+    <atom:link href="http://arturodz.com/feed.xml" rel="self" type="application/rss+xml" />
+    
+      <item>
+        <title>Minería de Datos en APIs Privadas</title>
+        
+        
+          <description>&lt;h2&gt;Introducción&lt;/h2&gt;
+
+&lt;p&gt;Existen muchos escenarios dentro de los cuales es útil tener acceso a la información de servicios externos. La forma más común de extraer estos datos, es a través de webscraping con alguna herramienta como &lt;a href=&quot;https://github.com/sparklemotion/mechanize&quot;&gt;Mechanize&lt;/a&gt; y/o &lt;a href=&quot;http://www.crummy.com/software/BeautifulSoup/&quot;&gt;Beautiful Soup&lt;/a&gt;. El problema con estas técnicas es que dependen de una interfaz web. Estas usualmente cambian frecuentemente dejando nuestros scripts de scraping sin funcionar. Otra alternativa es utilizar las APIs mediante las cuales se conectan los clientes oficiales, usualmente aplicaciones para dispositivos móviles. En este caso, aunque la interfaz de la aplicación móvil puede cambiar, usualmente los endpoints detrás siguen intactos. Otra ventaja es que normalmente la información que se obtiene de las APIs esta organizada y puede ser procesada con mayor facilidad.&lt;/p&gt;
+</description>
+        
+        <pubDate>Mon, 17 Aug 2015 00:00:00 -0500</pubDate>
+        <link>http://arturodz.com/2015/mineria-de-datos-en-apis-privadas/</link>
+        <guid isPermaLink="true">http://arturodz.com/2015/mineria-de-datos-en-apis-privadas/</guid>
+      </item>
+    
+  </channel>
+</rss>

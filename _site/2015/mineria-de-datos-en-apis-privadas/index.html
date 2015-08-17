@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Arturo Diaz - Minería de Datos en APIs Privadas</title>
+  <link rel="shortcut icon" href="/blog/assets/images/favicon.ico">
+  <link rel="stylesheet" href="/blog/assets/css/style.css">
+  <link rel="alternate" type="application/rss+xml" title="My Blog" href="/rss.xml">
+  <link rel="stylesheet" href="/blog/assets/css/highlight.css">
+</head>
+<body>
+
+  <nav class="main-nav">
+    
+        <a href='/blog/'> <span class="arrow">←</span> Home </a>
+    
+
+    
+        
+            <a href='/blog/about'>About </a>
+        
+    
+    <a class="cta" href="/blog/feed.xml">Subscribe</a>
+</nav>
+
+  
+
+  <section id="wrapper" class="">
+    <article class="post">
+    <header>
+        <h1>Minería de Datos en APIs Privadas</h1>
+        <h2 class="headline">August 17, 2015</h2>
+    </header>
+    <section id="post-body">
+        <h2>Introducción</h2>
+
+<p>Existen muchos escenarios dentro de los cuales es útil tener acceso a la información de servicios externos. La forma más común de extraer estos datos, es a través de webscraping con alguna herramienta como <a href="https://github.com/sparklemotion/mechanize">Mechanize</a> y/o <a href="http://www.crummy.com/software/BeautifulSoup/">Beautiful Soup</a>. El problema con estas técnicas es que dependen de una interfaz web. Estas usualmente cambian frecuentemente dejando nuestros scripts de scraping sin funcionar. Otra alternativa es utilizar las APIs mediante las cuales se conectan los clientes oficiales, usualmente aplicaciones para dispositivos móviles. En este caso, aunque la interfaz de la aplicación móvil puede cambiar, usualmente los endpoints detrás siguen intactos. Otra ventaja es que normalmente la información que se obtiene de las APIs esta organizada y puede ser procesada con mayor facilidad.</p>
+
+<p>El problema con este método es que en la mayoría de las ocasiones las comunicaciones se encuentran protegidas por SSL por lo que es necesario ensuciarse un poco las manos para poder tener acceso a los servicios.</p>
+
+<p>En este post voy a explicar como intervenir las comunicaciones de tu dispositivo móvil para registrar las solicitudes que realiza y sus respectivas respuestas de los diferentes servicios a los que consulta.</p>
+
+<h2>¿Como Funciona?</h2>
+
+<p><img src="/blog/assets/posts-images/como-para-extraer-informacion-de-apis-privadas-de-aplicaciones-en-tu-celular/explicit.png" alt="Funcionamiento de Mitmproxy"></p>
+
+<p>Este tipo de ataque se llama <a href="https://en.wikipedia.org/wiki/Man-in-the-middle_attack">Man in the Middle</a> y consiste en desviar las comunicaciones de un dispositivo hacia un proxy donde registras todas las comunicaciones. El dispositivo debe tener instalado un certificado que permite al proxy desencriptar las comunicaciones generando certificados SSL de forma dinámica según el servicio que estés consultando. Para más información sobre como funciona este ataque les sugiero este <a href="https://mitmproxy.org/doc/howmitmproxy.html">artículo de mitmproxy</a>.</p>
+
+<h2>Herramientas</h2>
+
+<p>Para hacer esto existen varias herramientas como <a href="https://www.wireshark.org/">Wireshark</a>, <a href="http://www.charlesproxy.com/">Charles Proxy</a> y la que usaremos hoy que es <a href="https://mitmproxy.org/">mitmproxy</a> ya que es gratuita y fácil de utilizar si estas acostumbrado a utilizar terminal.</p>
+
+<p>Para explorar el API más fácilmente una vez que hayamos extraído la información de las solicitudes les sugiero utilizar <a href="https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop?hl=en">Postman</a>, otra herramienta que recomiendo si tienen Mac es <a href="https://luckymarmot.com/paw">Paw</a>.</p>
+
+<p>También ocuparemos un dispositivo móvil. En este tutorial utilizaremos un iPhone. El proceso es muy similar en el caso de Android.</p>
+
+<h2>Instalación</h2>
+
+<p>Primero debemos instalar mitmproxy desde la terminal:</p>
+
+<p><code>$ pip install mitmproxy</code></p>
+
+<p>En caso de requerir una explicación más detallada sobre como instalar mitmproxy les sugiero revisar <a href="https://mitmproxy.org/doc/install.html">este artículo de su documentación</a>.</p>
+
+<p>Una vez instalado, ejecutaremos la aplicación para generar el certificado que instalaremos en nuestro móvil.</p>
+
+<p><code>$ mitmproxy</code></p>
+
+<p>Al iniciarse por primera vez mitmproxy generará los certificados y los guardará en el folder <code>~/.mitmproxy</code>. Ahora tomaremos el archivo <code>mitmproxy-ca-cert.pem</code> y lo enviamos por correo a nuestro dispositivo e instalamos el certificado. Esto lo hacemos ejecutando el archivo <code>.pem</code> adjunto y siguiendo las instrucciones de nuestro sistema operativo respectivo.</p>
+
+<p>Ahora debemos obtener la dirección de IP de nuestra computadora en la red local y asegurarnos que nuestro dispositivo se encuentre en la misma red.</p>
+
+<p><img src="/blog/assets/posts-images/como-para-extraer-informacion-de-apis-privadas-de-aplicaciones-en-tu-celular/ios.png" alt="Configuracion de Proxy en iOS" style="width: 250px" class="center"></p>
+
+<p>En nuestro dispositivo debemos añadir el proxy en la red a la cual nos encontramos conectados. En el campo de dirección deberás ingresar la dirección de la computadora donde estas corriendo mitmproxy. En el campo de puerto usarás 8080 que es el que utiliza mitmproxy por default.</p>
+
+<p>Una vez realizado esto podemos utilizar cualquier aplicación dentro de nuestro móvil que utilice internet y comenzaremos a ver el tráfico.</p>
+
+<p><img src="/blog/assets/posts-images/como-para-extraer-informacion-de-apis-privadas-de-aplicaciones-en-tu-celular/terminal1.png" alt="mitmproxy en funcionamiento"></p>
+
+<p>Pueden iterar sobre los resultados con las flechas o inclusive dando click a los resultados dentro de la terminal. Dentro de los resultados podemos iterar entre Request, Response y Detalles con tab.</p>
+
+<p><img src="/blog/assets/posts-images/como-para-extraer-informacion-de-apis-privadas-de-aplicaciones-en-tu-celular/terminal2.png" alt=""></p>
+
+<p>Utilizando la aplicación del servicio del que nos interese obtener información podemos comenzar a explorar como funciona. Por ejemplo, con la aplicación de Hellofood podemos obtener información sobre restaurantes cercanos a ciertas coordenadas que nosotros podemos especificar:</p>
+
+<p><img src="/blog/assets/posts-images/como-para-extraer-informacion-de-apis-privadas-de-aplicaciones-en-tu-celular/terminal3.png" alt=""></p>
+
+<p>Cuando estemos realizando las solicitudes desde Postman no debemos olvidar incluir los headers y parámetros requeridos. Estos pueden variar en diferentes servicios. En el caso de Hellofood, ellos requieren que les indiques el dispositivo del que estas ingresando.</p>
+
+<p><img src="/blog/assets/posts-images/como-para-extraer-informacion-de-apis-privadas-de-aplicaciones-en-tu-celular/postman.png" alt=""></p>
+
+<p>A partir de esto podemos comenzar a escribir nuestros scripts para accesar de forma programática a estos servicios. La información que esta en los headers, o en la estructura de la información también nos puede ayudar a determinar que servicios utilizan y la forma en la que esta construido el servicio.</p>
+
+<h2>Conclusión</h2>
+
+<p>Con este tipo de métodos podemos extraer grandes cantidades de información de los servicios por lo que debemos ser responsables con la manera en la que la extraemos. Es conveniente hacer las solicitudes con intervalos de tiempo razonables para no saturar los servicios de los que estamos extrayendo información. Si identificamos vulnerabilidades que expongan información sensible debemos informar a los administradores de los servicios para que puedan tomar las medidas pertinentes.</p>
+
+    </section>
+</article>
+<footer id="post-meta" class="clearfix">
+    <a href="http://twitter.com/arturodz">
+        <img class="avatar" src="/blog//assets/images/avatar.png">
+        <div>
+            <span class="dark">Arturo Diaz</span>
+            <span>Start Again.</span>
+        </div>
+    </a>
+
+    <section id="sharing">
+        <a class="twitter" href="https://twitter.com/intent/tweet?text=http://arturodz.com/2015/mineria-de-datos-en-apis-privadas/ - Minería de Datos en APIs Privadas by @arturodz"><span class="icon-twitter"> Tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+    </section>
+</footer>
+
+<!-- Disqus comments -->
+
+
+<!-- Archive post list -->
+
+    <ul id="post-list" class="archive readmore">
+        <h3>Read more</h3>
+        
+            <li>
+                <a href="/blog//2015/mineria-de-datos-en-apis-privadas/">Minería de Datos en APIs Privadas<aside class="dates">Aug 17</aside></a>
+            </li>
+        
+    </ul>
+
+
+  </section>
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src="/blog/assets/js/main.js"></script>
+  <script src="/blog/assets/js/highlight.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-XXXXXXXX-X', 'auto');
+    ga('send', 'pageview');
+  </script>
+</body>
+</html>
